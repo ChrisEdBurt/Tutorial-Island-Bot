@@ -17,11 +17,11 @@ def cut(trees, wood):
     Args:
         trees (list): A list containing an arbitrary number of 2-tuples.
                        Each tuple must contain two filepaths:
-                       The first filepath must be a needle of the
+                       The first filepath must be a image of the
                        tree in its "full" state. The second filepath
-                       must be a needle of the same tree in its "empty"
+                       must be a image of the same tree in its "empty"
                        state.
-        wood (file): Filepath to a needle of the item icon of the wood
+        wood (file): Filepath to a image of the item icon of the wood
                     being mined, as it appears in the player's
                     inventory.
     """
@@ -35,16 +35,16 @@ def cut(trees, wood):
         #   used to re-adjust the player if a mis-click moves the player
         #   out of position.
 
-        for tree_needle in trees:
+        for tree_image in trees:
             # Unpack each tuple in the rocks[] list to obtain the "full"
             #   and "empty" versions of each ore.
-            (full_tree_needle, empty_tree_needle) = tree_needle
+            (full_tree_image, empty_tree_image) = tree_image
 
             log.debug('Searching for tree %s...', tries)
 
             # If current tree is full, begin cutting it.
-            # Move the mouse away from the tree so it doesn't interfere with matching the needle.
-            tree_full = vision.Vision(ltwh=vision.game_screen, loop_num=1, needle=full_tree_needle, conf=0.8) \
+            # Move the mouse away from the tree so it doesn't interfere with matching the image.
+            tree_full = vision.Vision(ltwh=vision.game_screen, loop_num=1, image=full_tree_image, conf=0.8) \
                 .click_image(sleep_range=(0, 100, 0, 100,), move_duration_range=(0, 500), move_away=True)
             if tree_full is True:
                 log.info('Waiting for wooductting to startup.')
@@ -54,7 +54,7 @@ def cut(trees, wood):
 
                 # Once the tree has been clicked on, wait for woodcutting to startup by monitoring chat.
                 woodcutting_started = vision.Vision(ltwh=vision.chat_menu_recent, loop_num=5, conf=0.9,
-                                            needle='./needles/chat-menu/woodcutting-started.png',
+                                            image='./images/chat-menu/woodcutting-started.png',
                                             loop_sleep_range=(100, 200)).wait_for_image()
 
                 # If wooductting hasn't started after looping has finished, check to see if the inventory is full.
@@ -62,7 +62,7 @@ def cut(trees, wood):
                     log.debug('Timed out waiting for woodcutting to startup.')
 
                     inv_full = vision.Vision(ltwh=vision.chat_menu, loop_num=1,
-                                          needle='./needles/chat-menu/woodcutting-inventory-full.png').wait_for_image()
+                                          image='./images/chat-menu/woodcutting-inventory-full.png').wait_for_image()
 
                     # If the inventory is full, empty the ore and
                     #   return.
@@ -94,15 +94,15 @@ def cut(trees, wood):
 
                 log.info('Woodcutting started.')
 
-                # Wait until the rock is empty by waiting for the "empty" version of the rock_needle tuple.
+                # Wait until the rock is empty by waiting for the "empty" version of the rock_image tuple.
                 tree_empty = vision.Vision(ltwh=vision.game_screen, loop_num=35,
-                                        conf=0.85, needle=empty_tree_needle,
+                                        conf=0.85, image=empty_tree_image,
                                         loop_sleep_range=(100, 200)).wait_for_image()
                                         # loop_sleep_range=(300, 400)).wait_for_image()
 
                 if tree_empty is True:
                     log.info('Tree is empty.')
-                    log.debug('%s empty.', tree_needle)
+                    log.debug('%s empty.', tree_image)
                     behaviour.human_behavior_rand(chance=100)
                 else:
                     log.info('Timed out waiting for woodcutting to finish.')
@@ -158,18 +158,18 @@ def woocutter(scenario):
             behaviour.login_full()
 
         if scenario == 'varrock-east-trees-regular':
-            skills.cut(trees=[('./needles/game-screen/varrock-east-trees/east-regular-full.png',
-                                './needles/game-screen/varrock-east-trees/east-regular-empty.png'),
-                               ('./needles/game-screen/varrock-east-trees/south-regular-full.png',
-                                './needles/game-screen/varrock-east-trees/south-regular-empty.png')],
-                        wood='./needles/items/normal-log.png')
+            skills.cut(trees=[('./images/game-screen/varrock-east-trees/east-regular-full.png',
+                                './images/game-screen/varrock-east-trees/east-regular-empty.png'),
+                               ('./images/game-screen/varrock-east-trees/south-regular-full.png',
+                                './images/game-screen/varrock-east-trees/south-regular-empty.png')],
+                        wood='./images/items/normal-log.png')
 
         elif scenario == 'varrock-east-trees-oak':
-            skills.cut(trees=[('./needles/game-screen/varrock-east-trees/east-oak-full.png',
-                                './needles/game-screen/varrock-east-trees/east-oak-empty.png'),
-                               ('./needles/game-screen/varrock-east-trees/west-oak-full.png',
-                                './needles/game-screen/varrock-east-trees/west-oak-empty.png')],
-                        wood='./needles/items/oak-log.png')
+            skills.cut(trees=[('./images/game-screen/varrock-east-trees/east-oak-full.png',
+                                './images/game-screen/varrock-east-trees/east-oak-empty.png'),
+                               ('./images/game-screen/varrock-east-trees/west-oak-full.png',
+                                './images/game-screen/varrock-east-trees/west-oak-empty.png')],
+                        wood='./images/items/oak-log.png')
 
         else:
             raise Exception('Scenario not supported!')
@@ -189,11 +189,11 @@ def mine(rocks, ore, ore_type, drop_ore):
     Args:
         rocks (list): A list containing an arbitrary number of 2-tuples.
                        Each tuple must contain two filepaths:
-                       The first filepath must be a needle of the
+                       The first filepath must be a image of the
                        rock in its "full" state. The second filepath
-                       must be a needle of the same rock in its "empty"
+                       must be a image of the same rock in its "empty"
                        state.
-        ore (file): Filepath to a needle of the item icon of the ore
+        ore (file): Filepath to a image of the item icon of the ore
                     being mined, as it appears in the player's
                     inventory.
         ore_type (str): The type of ore being mined, used for generating
@@ -208,11 +208,11 @@ def mine(rocks, ore, ore_type, drop_ore):
         drop.
 
     """
-    gems = ['./needles/items/uncut-sapphire.png',
-            './needles/items/uncut-emerald.png',
-            './needles/items/uncut-ruby.png',
-            './needles/items/uncut-diamond.png',
-            './needles/items/clue-geode.png']
+    gems = ['./images/items/uncut-sapphire.png',
+            './images/items/uncut-emerald.png',
+            './images/items/uncut-ruby.png',
+            './images/items/uncut-diamond.png',
+            './images/items/clue-geode.png']
 
     # Vision objects have to be imported within functions because the
     #   init_vision() function has to run before the objects get valid
@@ -234,17 +234,17 @@ def mine(rocks, ore, ore_type, drop_ore):
         # Applies to Varrock East mine only.
         behaviour.travel([((240, 399), 1, (4, 4), (5, 10))], './haystacks/varrock-east-mine.png')
 
-        for rock_needle in rocks:
+        for rock_image in rocks:
             # Unpack each tuple in the rocks[] list to obtain the "full"
             #   and "empty" versions of each ore.
-            (full_rock_needle, empty_rock_needle) = rock_needle
+            (full_rock_image, empty_rock_image) = rock_image
 
             log.debug('Searching for ore %s...', tries)
 
             # If current rock is full, begin mining it.
             # Move the mouse away from the rock so it doesn't
-            #   interfere with matching the needle.
-            rock_full = vision.Vision(ltwh=vision.game_screen, loop_num=1, needle=full_rock_needle, conf=0.8) \
+            #   interfere with matching the image.
+            rock_full = vision.Vision(ltwh=vision.game_screen, loop_num=1, image=full_rock_image, conf=0.8) \
                 .click_image(sleep_range=(0, 100, 0, 100,), move_duration_range=(0, 500), move_away=True)
             if rock_full is True:
                 log.info('Waiting for mining to startup.')
@@ -255,7 +255,7 @@ def mine(rocks, ore, ore_type, drop_ore):
                 # Once the rock has been clicked on, wait for mining to
                 #   startup by monitoring chat.
                 mining_started = vision.Vision(ltwh=vision.chat_menu_recent, loop_num=5, conf=0.9,
-                                            needle='./needles/chat-menu/mining-started.png',
+                                            image='./images/chat-menu/mining-started.png',
                                             loop_sleep_range=(100, 200)).wait_for_image()
 
                 # If mining hasn't started after looping has finished,
@@ -264,7 +264,7 @@ def mine(rocks, ore, ore_type, drop_ore):
                     log.debug('Timed out waiting for mining to startup.')
 
                     inv_full = vision.Vision(ltwh=vision.chat_menu, loop_num=1,
-                                          needle='./needles/chat-menu/'
+                                          image='./images/chat-menu/'
                                                  'mining-inventory-full.png').wait_for_image()
 
                     # If the inventory is full, empty the ore and
@@ -281,9 +281,9 @@ def mine(rocks, ore, ore_type, drop_ore):
                                             ((108, 194), 1, (10, 4), (3, 8))],
                                             './haystacks/varrock-east-mine.png')
                             behaviour.open_bank('south')
-                            vision.Vision(ltwh=vision.inv, needle=ore).click_image()
+                            vision.Vision(ltwh=vision.inv, image=ore).click_image()
                             for gem in gems:
-                                vision.Vision(ltwh=vision.inv, needle=gem, loop_num=1).click_image()
+                                vision.Vision(ltwh=vision.inv, image=gem, loop_num=1).click_image()
                             misc.sleep_rand(500, 3000)
                             # Mining spot from bank.
                             behaviour.travel([((240, 161), 5, (35, 35), (1, 6)),
@@ -300,14 +300,14 @@ def mine(rocks, ore, ore_type, drop_ore):
                 log.info('Mining started.')
 
                 # Wait until the rock is empty by waiting for the
-                #   "empty" version of the rock_needle tuple.
+                #   "empty" version of the rock_image tuple.
                 rock_empty = vision.Vision(ltwh=vision.game_screen, loop_num=35,
-                                        conf=0.85, needle=empty_rock_needle,
+                                        conf=0.85, image=empty_rock_image,
                                         loop_sleep_range=(100, 200)).wait_for_image()
 
                 if rock_empty is True:
                     log.info('Rock is empty.')
-                    log.debug('%s empty.', rock_needle)
+                    log.debug('%s empty.', rock_image)
                     behaviour.human_behavior_rand(chance=100)
                 else:
                     log.info('Timed out waiting for mining to finish.')
@@ -322,11 +322,11 @@ def fdrop_ore(ore):
     """
 
     # Create tuples of whether or not to drop the item and the item's path.
-    drop_sapphire = (startup.config.get('mining', 'drop_sapphire'), './needles/items/uncut-sapphire.png')
-    drop_emerald = (startup.config.get('mining', 'drop_emerald'), './needles/items/uncut-emerald.png')
-    drop_ruby = (startup.config.get('mining', 'drop_ruby'), './needles/items/uncut-ruby.png')
-    drop_diamond = (startup.config.get('mining', 'drop_diamond'), './needles/items/uncut-diamond.png')
-    drop_clue_geode = (startup.config.get('mining', 'drop_clue_geode'), './needles/items/clue-geode.png')
+    drop_sapphire = (startup.config.get('mining', 'drop_sapphire'), './images/items/uncut-sapphire.png')
+    drop_emerald = (startup.config.get('mining', 'drop_emerald'), './images/items/uncut-emerald.png')
+    drop_ruby = (startup.config.get('mining', 'drop_ruby'), './images/items/uncut-ruby.png')
+    drop_diamond = (startup.config.get('mining', 'drop_diamond'), './images/items/uncut-diamond.png')
+    drop_clue_geode = (startup.config.get('mining', 'drop_clue_geode'), './images/items/clue-geode.png')
     ore_dropped = behaviour.drop_item(item=ore)
     if ore_dropped is False:
         behaviour.logout()

@@ -15,7 +15,6 @@ import behaviour
 # initialize HumanClicker object
 hc = pyc.HumanClicker()
 
-
 class Mouse:
     """
     Class to move and click the mouse cursor.

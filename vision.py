@@ -12,28 +12,28 @@ import misc
 import behaviour
 import input
 
-def haystack_locate(needle, haystack, grayscale=False, conf=0.95):
+def haystack_locate(image, haystack, grayscale=False, conf=0.95):
     """
-    Finds the coordinates of a needle image within a haystack image.
+    Finds the coordinates of a image image within a haystack image.
 
     Args:
-        needle (file): Filepath to the needle image.
+        image (file): Filepath to the image image.
         haystack (file): Filepath to the haystack image.
         grayscale (bool): Whether to use grayscale matching to increase
                           speed, default is false.
-        conf (float): Similarity required to match needle to haystack,
+        conf (float): Similarity required to match image to haystack,
                       expressed as a decimal <= 1, default is 0.95.
 
     """
     # Make sure file path is OS-agnostic.
-    needle = str(pathlib.Path(needle))
+    image = str(pathlib.Path(image))
 
-    target_image = pag.locate(needle, haystack, confidence=conf, grayscale=grayscale)
+    target_image = pag.locate(image, haystack, confidence=conf, grayscale=grayscale)
     if target_image is not None:
-        log.debug('Found center of %s, %s', needle, target_image)
+        log.debug('Found center of %s, %s', image, target_image)
         return target_image
 
-    log.debug('Cannot find center of %s, conf=%s', needle, conf)
+    log.debug('Cannot find center of %s, conf=%s', image, conf)
     return False
 
 
@@ -45,21 +45,21 @@ class Vision:
     Args:
         ltwh (tuple): A 4-tuple containing the Left, Top, Width, and
                       Height of the region in which to look for the
-                      needle.
-        needle (file): The image to search within the (ltwh) coordinates
+                      image.
+        image (file): The image to search within the (ltwh) coordinates
                        for. Must be a filepath.
-        loctype (str): Whether to return the needle's (ltwh) coordinates
+        loctype (str): Whether to return the image's (ltwh) coordinates
                        or its (X, Y) center.
-            regular = Returns the needle's left, top, width, and height
+            regular = Returns the image's left, top, width, and height
                       as a 4-tuple.
-            center = Returns the (X, Y) coordinates of the needle's
+            center = Returns the (X, Y) coordinates of the image's
                      center as a 2-tuple (relative to the display's
                      dimensions).
-        conf (float): The confidence value required to match the needle
+        conf (float): The confidence value required to match the image
                       successfully, expressed as a decimal <= 1. This is
                       used by PyAutoGUI, default is 0.95.
         loop_num (int): The number of times wait_for_image() will search
-                        the given coordinates for the needle, default is
+                        the given coordinates for the image, default is
                         10.
         loop_sleep_range (tuple): A 2-tuple containing the minimum and
                                   maximum number of miliseconds to wait
@@ -72,11 +72,13 @@ class Vision:
 
     """
 
-    def __init__(self, ltwh, needle, loctype='regular', conf=0.95,
-                 loop_num=10, loop_sleep_range=(0, 100), grayscale=False):
+    # def __init__(self, ltwh, image, loctype='regular', conf=0.95,
+    #              loop_num=20, loop_sleep_range=(0, 100), grayscale=False):
+    def __init__(self, ltwh, image, loctype='regular', conf=0.80, 
+        loop_num=20, loop_sleep_range=(0, 100), grayscale=True):
         self.grayscale = grayscale
         self.ltwh = ltwh
-        self.needle = needle
+        self.image = image
         self.loctype = loctype
         self.conf = conf
         self.loop_num = loop_num
@@ -84,39 +86,41 @@ class Vision:
 
     def mlocate(self):
         """
-        Searches the (ltwh) coordinates for the needle image.
+        Searches the (ltwh) coordinates for the image.
 
         Returns:
-            If the needle is found, and loctype is regular, returns the
-            needle's left/top/width/height parameters as a 4-tuple. If
-            the needle is found and loctype is center, returns coordinates
-            of the needle's center as a 2-tuple. If the needle is not
+            If the image is found, and loctype is regular, returns the
+            image's left/top/width/height parameters as a 4-tuple. If
+            the image is found and loctype is center, returns coordinates
+            of the image's center as a 2-tuple. If the image is not
             found, returns False.
 
         """
         # Make sure file path is OS-agnostic.
-        needle = str(pathlib.Path(self.needle))
+        image = str(pathlib.Path(self.image))
 
         if self.loctype == 'regular':
-            target_image = pag.locateOnScreen(needle, confidence=self.conf,
+            target_image = pag.locateOnScreen(image, confidence=self.conf,
                                               grayscale=self.grayscale,
                                               region=self.ltwh)
             if target_image is not None:
-                log.debug('Found regular image %s, %s', needle, target_image)
+                log.debug('Found regular image %s, %s', image, target_image)
+                log.info('Found regular image %s, %s', image, target_image)
                 return target_image
 
-            log.debug('Cannot find regular image %s, conf=%s', needle, self.conf)
+            log.debug('Cannot find regular image %s, conf=%s', image, self.conf)
             return False
 
         elif self.loctype == 'center':
-            target_image = pag.locateCenterOnScreen(needle, confidence=self.conf,
+            target_image = pag.locateCenterOnScreen(image, confidence=self.conf,
                                                     grayscale=self.grayscale,
                                                     region=self.ltwh)
             if target_image is not None:
-                log.debug('Found center of image %s, %s', needle, target_image)
+                log.debug('Found center of image %s, %s', image, target_image)
+                log.info('Found center of image %s, %s', image, target_image)
                 return target_image
 
-            log.debug('Cannot find center of image %s, conf=%s', needle, self.conf)
+            log.debug('Cannot find center of image %s, conf=%s', image, self.conf)
             return False
 
         raise RuntimeError('Incorrect mlocate function parameters!')
@@ -124,24 +128,24 @@ class Vision:
     def wait_for_image(self, get_tuple=False):
         """
         Repeatedly searches within the (ltwh) coordinate space
-        for the needle.
+        for the image.
 
         Args:
             get_tuple (bool): Whether to return a tuple containing the
-                              needle's coordinates.
+                              image's coordinates.
 
         Returns:
-            If get_tuple is false, returns True if needle was found.
+            If get_tuple is false, returns True if image was found.
 
             If get_tuple is true and loctype is 'regular', returns a
             4-tuple containing the (left, top, width, height) coordinates
-            of the needle. If loctype is 'center', returns a tuple
-            containing the (X, Y) center of the needle.
+            of the image. If loctype is 'center', returns a tuple
+            containing the (X, Y) center of the image.
 
-            Returns False if needle was not found.
+            Returns False if image was not found.
 
         """
-        # log.debug('Looking for ' + str(needle))
+        # log.debug('Looking for ' + str(image))
 
         # Need to add 1 to loop_num because if range() starts at 0, the
         #   first loop will be the "0th" loop, which is confusing.
@@ -150,24 +154,24 @@ class Vision:
             target_image = Vision.mlocate(self)
 
             if target_image is False:
-                log.debug('Cannot find %s, tried %s times.', self.needle, tries)
+                log.debug('Cannot find %s, tried %s times.', self.image, tries)
                 loop_sleep_min, loop_sleep_max = self.loop_sleep_range
                 misc.sleep_rand(loop_sleep_min, loop_sleep_max)
 
             else:
-                log.debug('Found %s after trying %s times.', self.needle, tries)
+                log.debug('Found %s after trying %s times.', self.image, tries)
                 if get_tuple is True:
                     return target_image
                 return True
 
-        log.debug('Timed out looking for %s', self.needle)
+        log.debug('Timed out looking for %s', self.image)
         return False
 
     def click_image(self, sleep_range=(50, 200, 50, 200),
                     move_duration_range=(50, 1500),
                     button='left', move_away=False):
         """
-        Moves the mouse to the provided needle image and clicks on
+        Moves the mouse to the provided image image and clicks on
         it.
 
         Args:
@@ -177,31 +181,30 @@ class Vision:
                                          input.py, see its docstring for
                                          more info.
             button (str): The mouse button to use when clicking on the
-                          needle, default is left.
+                          image, default is left.
             move_away (bool): Whether to move the mouse out of the way
-                              after clicking on the needle. Useful when
+                              after clicking on the image. Useful when
                               mlocate() needs to determine the status
                               of a button that the mouse just clicked.
 
         Returns:
-            Returns True if method found the needle and clicked on it,
+            Returns True if method found the image and clicked on it,
             returns False otherwise.
 
         """
-        log.debug('Looking for %s to click on.', self.needle)
+        log.debug('Looking for %s to click on.', self.image)
 
         target_image = self.wait_for_image(get_tuple=True)
 
         if isinstance(target_image, tuple) is True:
-            # Randomize the location the pointer will move to using the
-            #   dimensions of needle image.
+            # Randomize the location the pointer will move to using the dimensions of image image.
             input.Mouse(ltwh=target_image,
             # input.Mouse(ltwh=target_image,
                         sleep_range=sleep_range,
                         move_duration_range=move_duration_range,
                         button=button).click_coord()
 
-            log.debug('Clicking on %s', self.needle)
+            log.debug('Clicking on %s', self.image)
 
             if move_away is True:
                 input.Mouse(ltwh=(25, 25, 100, 100), move_duration_range=(50, 200)).moverel()
@@ -236,21 +239,21 @@ def orient(ltwh=(0, 0, startup.DISPLAY_WIDTH, startup.DISPLAY_HEIGHT),
     Returns:
          If client is logged in, returns a 2-tuple containing a string
          with the text "logged_in" and a 2-tuple of the center (X, Y)
-         coordinates of the orient needle.
+         coordinates of the orient image.
 
          If client is logged out, returns a 2-tuple containing a string
          with the text "logged_out" and a 2-tuple of the center (X, Y)
-         coordinates of the orient-logged-out needle.
+         coordinates of the orient-logged-out image.
 
     """
-    logged_in = Vision(ltwh=ltwh, needle='images/minimap/orient.png',
+    logged_in = Vision(ltwh=ltwh, image='images/minimap/orient.png',
                        loctype='center', loop_num=1, conf=0.8) \
         .wait_for_image(get_tuple=True)
     if isinstance(logged_in, tuple) is True:
         return 'logged_in', logged_in
 
     # If the client is not logged in, check if it's logged out.
-    logged_out = Vision(ltwh=ltwh, needle='images/login-menu/orient-logged-out.png',
+    logged_out = Vision(ltwh=ltwh, image='images/login-menu/orient-logged-out.png',
                         loctype='center', loop_num=1, conf=0.8) \
         .wait_for_image(get_tuple=True)
     if isinstance(logged_out, tuple) is True:

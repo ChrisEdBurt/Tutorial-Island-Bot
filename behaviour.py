@@ -69,17 +69,17 @@ def login_basic(username_file=startup.config.get('main', 'username_file'),
         # This button appears if the user was disconnected due to
         #   inactivity.
         ok_button = vision.Vision(ltwh=vision.client,
-                               needle='./images/login-menu/ok-button.png',
+                               image='./images/login-menu/ok-button.png',
                                loop_num=1).click_image()
         # If the "Ok" button isn't found, look for the "Existing user"
         #   button.
         existing_user_button = vision.Vision(ltwh=vision.client,
-                                          needle='./images/login-menu/existing-user-button.png',
+                                          image='./images/login-menu/existing-user-button.png',
                                           loop_num=1).click_image()
 
         if existing_user_button is True or ok_button is True:
             credential_screen = vision.Vision(ltwh=vision.client,
-                                           needle='./images/login-menu/login-cancel-buttons.png',
+                                           image='./images/login-menu/login-cancel-buttons.png',
                                            loop_num=5).wait_for_image()
 
             if credential_screen is True:
@@ -140,7 +140,7 @@ def login_full(login_sleep_range=(500, 5000), postlogin_sleep_range=(500, 5000))
 
         misc.sleep_rand(login_sleep_range[0], login_sleep_range[1])
         postlogin_screen_button = vision.Vision(ltwh=vision.display,
-                                             needle='./images/login-menu/orient-postlogin.png',
+                                             image='./images/login-menu/orient-postlogin.png',
                                              conf=0.8, loop_num=10, loop_sleep_range=(1000, 2000)).click_image()
 
         if postlogin_screen_button is True:
@@ -149,7 +149,7 @@ def login_full(login_sleep_range=(500, 5000), postlogin_sleep_range=(500, 5000))
             # Wait for the orient function to return true in order to
             #    confirm the login.
             logged_in = vision.Vision(ltwh=vision.display,
-                                   needle='./images/minimap/orient.png',
+                                   image='./images/minimap/orient.png',
                                    loop_num=50, loop_sleep_range=(1000, 2000)).wait_for_image()
             if logged_in is True:
                 # Reset the timer that's used to count the number of
@@ -173,7 +173,7 @@ def login_full(login_sleep_range=(500, 5000), postlogin_sleep_range=(500, 5000))
 
             # TODO: add additional checks to other login messages
             invalid_credentials = vision.Vision(ltwh=vision.display,
-                                             needle='./images/login-menu/invalid-credentials.png',
+                                             image='./images/login-menu/invalid-credentials.png',
                                              loop_num=1).wait_for_image()
             if invalid_credentials is True:
                 raise Exception('Invalid user credentials!')
@@ -208,7 +208,7 @@ def logout():
     for _ in range(5):
         # The standard logout button.
         logout_button = vision.Vision(ltwh=vision.inv,
-                                   needle='./images/side-stones/logout/logout.png',
+                                   image='./images/side-stones/logout/logout.png',
                                    conf=0.9, loop_num=1).wait_for_image(get_tuple=True)
         if isinstance(logout_button, tuple) is True:
             # Break out of the loop if any of the buttons was found.
@@ -216,7 +216,7 @@ def logout():
 
         # The logout button as it appears when the mouse is over it.
         logout_button_highlighted = vision.Vision(ltwh=vision.inv,
-                                               needle='./images/side-stones/logout/logout-highlighted.png',
+                                               image='./images/side-stones/logout/logout-highlighted.png',
                                                conf=0.9, loop_num=1).wait_for_image(get_tuple=True)
         if isinstance(logout_button_highlighted, tuple) is True:
             logout_button = logout_button_highlighted
@@ -225,7 +225,7 @@ def logout():
         # TODO: fix missing logout-world-switcher.png
         # The logout button when the world switcher is open.
         logout_button_world_switcher = vision.Vision(ltwh=vision.side_stones,
-                                                  needle='./images/side-stones/logout/logout-world-switcher.png',
+                                                  image='./images/side-stones/logout/logout-world-switcher.png',
                                                   conf=0.9, loop_num=1).wait_for_image(get_tuple=True)
         if isinstance(logout_button_world_switcher, tuple) is True:
             logout_button = logout_button_world_switcher
@@ -242,7 +242,7 @@ def logout():
     input.Mouse(ltwh=logout_button).click_coord(move_away=True)
     for tries in range(5):
         logged_out = vision.Vision(ltwh=vision.client,
-                                needle='./images/login-menu/orient-logged-out.png',
+                                image='./images/login-menu/orient-logged-out.png',
                                 loop_num=5, loop_sleep_range=(1000, 1200)).wait_for_image()
         if logged_out is True:
             log.info('Logged out after trying %s times(s)', tries)
@@ -405,7 +405,7 @@ def open_side_stone(side_stone):
 
     # Some side stones need a higher than default confidence to determine
     #   if they're open.
-    stone_open = vision.Vision(ltwh=vision.side_stones, needle=side_stone_open,
+    stone_open = vision.Vision(ltwh=vision.side_stones, image=side_stone_open,
                             loop_num=1, conf=0.98).wait_for_image()
     if stone_open is True:
         log.debug('Side stone already open.')
@@ -418,11 +418,11 @@ def open_side_stone(side_stone):
     for tries in range(6):
         # Move mouse out of the way after clicking so the function can
         #   tell if the stone is open.
-        vision.Vision(ltwh=vision.side_stones, needle=side_stone_closed,
+        vision.Vision(ltwh=vision.side_stones, image=side_stone_closed,
                    loop_num=3, loop_sleep_range=(100, 300)). \
             click_image(sleep_range=(0, 200, 0, 200), move_away=True)
 
-        stone_open = vision.Vision(ltwh=vision.side_stones, needle=side_stone_open,
+        stone_open = vision.Vision(ltwh=vision.side_stones, image=side_stone_open,
                                 loop_num=3, conf=0.98, loop_sleep_range=(100, 200)). \
             wait_for_image()
 
@@ -431,7 +431,7 @@ def open_side_stone(side_stone):
             return True
         # Make sure the bank window isn't open, which would block
         #   access to the side stones.
-        vision.Vision(ltwh=vision.game_screen, needle='./images/buttons/close.png',
+        vision.Vision(ltwh=vision.game_screen, image='./images/buttons/close.png',
                    loop_num=1).click_image()
     raise Exception('Could not open side stone!')
 
@@ -516,7 +516,7 @@ def drop_item(item, track=True, wait_chance=120, wait_min=5000, wait_max=20000):
     open_side_stone('inventory')
     log.info('inventory opened')
     
-    item_remains = vision.inv.wait_for_image(loop_num=1, needle=item)
+    item_remains = vision.inv.wait_for_image(loop_num=1, image=item)
     if item_remains is False:
         log.info('Could not find %s', item)
         return False
@@ -529,7 +529,7 @@ def drop_item(item, track=True, wait_chance=120, wait_min=5000, wait_max=20000):
         #   right half of the player's inventory. This helps reduce the
         #   chances the bot will click on the same item twice.
         item_on_right = \
-            vision.inv_right_half(needle=item).click_image(loop_num=1,
+            vision.inv_right_half(image=item).click_image(loop_num=1,
                                                         sleep_range=(10, 50, 50, 300),
                                                         move_duration_range=(50, 800))
         # TODO: this "track" parameter is for stats. implement stats!
@@ -537,7 +537,7 @@ def drop_item(item, track=True, wait_chance=120, wait_min=5000, wait_max=20000):
             startup.items_gathered += 1
 
         item_on_left = \
-            vision.inv_left_half(needle=item).click_image(loop_num=1,
+            vision.inv_left_half(image=item).click_image(loop_num=1,
                                                        sleep_range=(10, 50, 50, 300),
                                                        move_duration_range=(50, 800))
         if item_on_left is True and track is True:
@@ -545,7 +545,7 @@ def drop_item(item, track=True, wait_chance=120, wait_min=5000, wait_max=20000):
 
         # Search the entire inventory to check if the item is still
         #   there.
-        item_remains = vision.inv.wait_for_image(loop_num=1, needle=item)
+        item_remains = vision.inv.wait_for_image(loop_num=1, image=item)
 
         # Chance to briefly wait while dropping items.
         misc.wait_rand(wait_chance, wait_min, wait_max)
@@ -574,7 +574,7 @@ def bank_config_check(config, status):
     if config == 'quantity':
         if status == 'all':
             quantity_all_enabled = vision.Vision(ltwh=vision.game_screen,
-                                              needle='./images/buttons/'
+                                              image='./images/buttons/'
                                                      'bank-preset-all.png',
                                               loop_num=2).wait_for_image()
             if quantity_all_enabled is False:
@@ -595,16 +595,16 @@ def open_bank(direction):
     """
     for _ in range(10):
         one_tile = vision.Vision(ltwh=vision.game_screen,
-                              needle='./images/game-screen/bank/bank-booth-' + direction + '-1-tile.png',
+                              image='./images/game-screen/bank/bank-booth-' + direction + '-1-tile.png',
                               loop_num=1, conf=0.85).click_image()
 
         two_tiles = vision.Vision(ltwh=vision.game_screen,
-                               needle='./images/game-screen/bank/bank-booth-' + direction + '-2-tiles.png',
+                               image='./images/game-screen/bank/bank-booth-' + direction + '-2-tiles.png',
                                loop_num=1, conf=0.85).click_image()
 
         if one_tile is True or two_tiles is True:
             bank_open = vision.Vision(ltwh=vision.game_screen,
-                                   needle='./images/buttons/close.png',
+                                   image='./images/buttons/close.png',
                                    loop_num=50).wait_for_image()
             if bank_open is True:
                 return True
@@ -622,12 +622,12 @@ def enable_run():
     # TODO: turn run on when over 75%
     for _ in range(5):
         run_full_off = vision.Vision(ltwh=vision.client,
-                                  needle='./images/buttons/run-full-off.png',
+                                  image='./images/buttons/run-full-off.png',
                                   loop_num=1).click_image(move_away=True)
         if run_full_off is True:
             misc.sleep_rand(300, 1000)
             run_full_on = vision.Vision(ltwh=vision.client,
-                                     needle='./images/buttons/run-full-on.png',
+                                     image='./images/buttons/run-full-on.png',
                                      loop_num=1).wait_for_image()
             if run_full_on is True:
                 return True
@@ -778,18 +778,18 @@ def ocv_find_location(haystack):
     very flexible.
 
     Args:
-        haystack: The haystack to match the needle within. Must be
+        haystack: The haystack to match the image within. Must be
                   an OpenCV vision object.
 
     Returns:
         Returns the (left, top, width, height) coordinates of the
-        needle within the haystack.
+        image within the haystack.
 
     """
-    needle = pag.screenshot(region=vision.minimap_slice)
-    needle = cv2.cvtColor(np.array(needle), cv2.COLOR_RGB2GRAY)
-    w, h = needle.shape[::-1]
-    result = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
+    image = pag.screenshot(region=vision.minimap_slice)
+    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
+    w, h = image.shape[::-1]
+    result = cv2.matchTemplate(haystack, image, cv2.TM_CCOEFF_NORMED)
     loc = cv2.minMaxLoc(result)
     match = loc[3]
     return match[0], match[1], w, h
