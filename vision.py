@@ -74,8 +74,11 @@ class Vision:
 
     # def __init__(self, ltwh, image, loctype='regular', conf=0.95,
     #              loop_num=20, loop_sleep_range=(0, 100), grayscale=False):
-    def __init__(self, ltwh, image, loctype='regular', conf=0.80, 
-        loop_num=20, loop_sleep_range=(0, 100), grayscale=True):
+    # def __init__(self, ltwh, image, loctype='regular', conf=0.80, 
+    #     loop_num=20, loop_sleep_range=(0, 100), grayscale=True):
+    # def __init__(self, ltwh, image, loctype='regular', conf=0.80, 
+    def __init__(self, ltwh, image, loctype='regular', conf=0.90, 
+        loop_num=20, loop_sleep_range=(0, 100), grayscale=False):
         self.grayscale = grayscale
         self.ltwh = ltwh
         self.image = image

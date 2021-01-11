@@ -12,6 +12,10 @@ import input
 import skills
 import logging as log
 
+import os
+import time
+from PIL import Image
+
 import step_one
 import step_two
 import step_three
@@ -29,65 +33,24 @@ import step_eleven
 # login using credentials, type full username followed by the password.
 # behaviour.login_full()
 
-#behaviour.login_basic()
+behaviour.login_basic()
+
+# time.sleep(15)
+
+logged_in = vision.Vision(ltwh=vision.display,
+                                   image='./images/minimap/orient.png',
+                                   loop_num=50, loop_sleep_range=(1000, 2000)).wait_for_image()
 
 # log.info('Open inventory screen if closed, otherwise nothing.')
 # behaviour.open_side_stone('inventory')
 
-log.info('gielbor_guide1')
-gielnor_guide1 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide1.png',    
-    loop_num=1).click_image()
+gielnor_guide = [os.path.join('./images/game-screen/tutorial-island/gielnor-guide/',f) for f in os.listdir('./images/game-screen/tutorial-island/gielnor-guide/') if f.endswith('.png')]
+print(gielnor_guide)
 
-log.info('gielbor_guide2')
-gielnor_guide2 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide2.png',
+for i in gielnor_guide:
+    log.info('gielbor_guide ' + i)
+    gielnor_guide1 = vision.Vision(ltwh=vision.client,
+    image = i,    
     loop_num=1).click_image()
-
-log.info('gielbor_guide3')
-gielnor_guide3 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide3.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide4')
-gielnor_guide4 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide4.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide5')
-gielnor_guide5 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide5.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide6')
-gielnor_guide6 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide6.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide7')
-gielnor_guide7 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide7.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide8')
-gielnor_guide8 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide8.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide9')
-gielnor_guide9 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide9.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide10')
-gielnor_guide10 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide10.png',
-    loop_num=1).click_image()
-
-log.info('gielbor_guide11')
-gielnor_guide11 = vision.Vision(ltwh=vision.client,
-    image='./images/game-screen/tutorial-island/gielnor-guide/gielbor_guide11.png',
-    loop_num=1).click_image()
-
 
 # Test ----------------------------------------------------------------------------------------------------------------------
